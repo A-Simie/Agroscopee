@@ -78,17 +78,7 @@ export const signupUser = async (
   try {
     const response = await api.post<AuthUser>("/api/auth/signup", payload);
 
-    const authorizationHeader = response.headers.authorization as
-      | string
-      | undefined;
-    const token = extractTokenFromHeader(authorizationHeader);
-
-    if (token) {
-      localStorage.setItem("AgroAccessToken", token);
-    }
-
-    localStorage.setItem("AgroScopeUser", JSON.stringify(response.data));
-    toast.success("AgroScope account created successfully!");
+    toast.success("Account created! Please log in to continue.");
     return response.data;
   } catch (error) {
     const axiosError = error as AxiosError<ErrorResponse>;

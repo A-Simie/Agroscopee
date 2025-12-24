@@ -136,7 +136,7 @@ const communityPosts: Post[] = [
     avatar: "https://i.pravatar.cc/150?img=22",
     time: "2 days",
     content:
-      "What are the major constraints for women farmers in your region? I’d like to compile stories for our association newsletter.",
+      "What are the major constraints for women farmers in your region? I'd like to compile stories for our association newsletter.",
     likes: 75,
     comments: 20,
     shares: 11,
@@ -147,7 +147,7 @@ const communityPosts: Post[] = [
     avatar: "https://i.pravatar.cc/150?img=44",
     time: "2 days",
     content:
-      "Has anyone tried aquaponics or fish-farming combined with vegetable growing? I’d appreciate tips on setup and maintenance.",
+      "Has anyone tried aquaponics or fish-farming combined with vegetable growing? I'd appreciate tips on setup and maintenance.",
     image:
       "https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=800&h=500&fit=crop",
     likes: 63,
@@ -184,7 +184,7 @@ const communityPosts: Post[] = [
     avatar: "https://i.pravatar.cc/150?img=19",
     time: "4 days",
     content:
-      "What’s the best community outreach method to engage local markets in Ibadan? I’m thinking of pop‐up stalls and social media campaigns.",
+      "What's the best community outreach method to engage local markets in Ibadan? I'm thinking of pop‐up stalls and social media campaigns.",
     likes: 39,
     comments: 6,
     shares: 1,
@@ -195,7 +195,7 @@ const communityPosts: Post[] = [
     avatar: "https://i.pravatar.cc/150?img=50",
     time: "5 days",
     content:
-      "I’d like to start a beeswax and honey side-business on my farm. Any advice on certifications or local market demand?",
+      "I'd like to start a beeswax and honey side-business on my farm. Any advice on certifications or local market demand?",
     image:
       "https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=800&h=500&fit=crop",
     likes: 31,
@@ -206,90 +206,101 @@ const communityPosts: Post[] = [
 
 export default function Community() {
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="bg-white border-b border-gray-200 sticky top-0 z-50">
-        <div className="max-w-6xl mx-auto px-4 py-3">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <div className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 sticky top-0 z-50">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4">
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-3 sm:mb-4">
+            Community
+          </h1>
           <div className="relative mb-3">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-gray-500" />
             <input
               type="text"
               placeholder="Search in community"
-              className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+              className="w-full pl-10 pr-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 dark:focus:ring-teal-600 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
             />
           </div>
 
           <div className="flex gap-2">
-            <button className="flex items-center gap-2 px-4 py-2 rounded-lg font-medium bg-teal-600 text-white">
+            <button className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg font-medium bg-teal-600 hover:bg-teal-700 dark:bg-teal-700 dark:hover:bg-teal-600 text-white text-sm sm:text-base transition-colors">
               <Users className="w-4 h-4" />
-              Community
+              <span className="hidden sm:inline">Community</span>
             </button>
           </div>
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-4 py-4 space-y-4">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4 space-y-4 pb-24">
         {communityPosts.map((post) => (
           <div
             key={post.id}
-            className="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow"
+            className="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden hover:shadow-md dark:hover:shadow-xl transition-shadow border border-gray-100 dark:border-gray-700"
           >
             <div className="p-4 flex items-start justify-between">
-              <div className="flex gap-3">
+              <div className="flex gap-3 flex-1 min-w-0">
                 <img
                   src={post.avatar}
                   alt={post.author}
-                  className="w-12 h-12 rounded-full object-cover"
+                  className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover flex-shrink-0"
                 />
-                <div>
-                  <h3 className="font-semibold text-gray-900">{post.author}</h3>
-                  <p className="text-sm text-gray-500">{post.time}</p>
+                <div className="min-w-0 flex-1">
+                  <h3 className="font-semibold text-gray-900 dark:text-white text-sm sm:text-base truncate">
+                    {post.author}
+                  </h3>
+                  <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
+                    {post.time}
+                  </p>
                 </div>
               </div>
-              <button className="text-gray-400 hover:text-gray-600">
+              <button className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 flex-shrink-0">
                 <MoreVertical className="w-5 h-5" />
               </button>
             </div>
 
             <div className="px-4 pb-3">
-              <p className="text-gray-700">{post.content}</p>
+              <p className="text-gray-700 dark:text-gray-300 text-sm sm:text-base leading-relaxed">
+                {post.content}
+              </p>
             </div>
 
             {post.image && (
               <img
                 src={post.image}
                 alt=""
-                className="w-full h-64 object-cover"
+                className="w-full h-48 sm:h-64 md:h-80 object-cover"
               />
             )}
 
-            <div className="px-4 py-3 flex items-center gap-4 text-sm text-gray-500 border-t border-gray-100">
+            <div className="px-4 py-3 flex items-center gap-3 sm:gap-4 text-xs sm:text-sm text-gray-500 dark:text-gray-400 border-t border-gray-100 dark:border-gray-700">
               <div className="flex items-center gap-1">
-                👍 <span>{post.likes}</span>
+                <span>👍</span>
+                <span className="font-medium">{post.likes}</span>
               </div>
               <span>{post.comments} Comments</span>
               <span>{post.shares} Shares</span>
             </div>
 
-            <div className="px-4 py-3 flex items-center justify-around border-t border-gray-100">
-              <button className="flex items-center gap-2 text-gray-600 hover:text-teal-600">
-                <ThumbsUp className="w-5 h-5" />
-                Like
+            <div className="px-2 sm:px-4 py-3 flex items-center justify-around border-t border-gray-100 dark:border-gray-700">
+              <button className="flex items-center gap-1 sm:gap-2 text-gray-600 dark:text-gray-400 hover:text-teal-600 dark:hover:text-teal-400 transition-colors px-2 sm:px-3 py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700">
+                <ThumbsUp className="w-4 h-4 sm:w-5 sm:h-5" />
+                <span className="text-xs sm:text-sm font-medium">Like</span>
               </button>
-              <button className="flex items-center gap-2 text-gray-600 hover:text-teal-600">
-                <MessageCircle className="w-5 h-5" />
-                Comment
+              <button className="flex items-center gap-1 sm:gap-2 text-gray-600 dark:text-gray-400 hover:text-teal-600 dark:hover:text-teal-400 transition-colors px-2 sm:px-3 py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700">
+                <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5" />
+                <span className="text-xs sm:text-sm font-medium">Comment</span>
               </button>
-              <button className="flex items-center gap-2 text-gray-600 hover:text-teal-600">
-                <Share2 className="w-5 h-5" />
-                Share
+              <button className="flex items-center gap-1 sm:gap-2 text-gray-600 dark:text-gray-400 hover:text-teal-600 dark:hover:text-teal-400 transition-colors px-2 sm:px-3 py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700">
+                <Share2 className="w-4 h-4 sm:w-5 sm:h-5" />
+                <span className="text-xs sm:text-sm font-medium">Share</span>
               </button>
             </div>
           </div>
         ))}
 
-        <button className="fixed bottom-6 right-6 bg-teal-600 hover:bg-teal-700 text-white px-6 py-3 rounded-full shadow-lg flex items-center gap-2">
+        <button className="fixed bottom-6 right-4 sm:right-6 bg-teal-600 hover:bg-teal-700 dark:bg-teal-700 dark:hover:bg-teal-600 text-white px-4 sm:px-6 py-3 rounded-full shadow-lg flex items-center gap-2 text-sm sm:text-base font-medium transition-colors z-40">
           <Plus className="w-5 h-5" />
-          Question
+          <span className="hidden sm:inline">Question</span>
+          <span className="sm:hidden">Ask</span>
         </button>
       </div>
     </div>

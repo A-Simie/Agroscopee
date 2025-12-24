@@ -146,7 +146,6 @@ const marketProducts: Product[] = [
     category: "Vegetables",
   },
 
-  // Fruits (10)
   {
     id: "f1",
     name: "Plantains",
@@ -278,7 +277,6 @@ const marketProducts: Product[] = [
     category: "Fruits",
   },
 
-  // Poultry (10)
   {
     id: "p1",
     name: "Farm Eggs",
@@ -410,7 +408,6 @@ const marketProducts: Product[] = [
     category: "Poultry",
   },
 
-  // Produce (10) — here “Produce” meaning other farm goods beyond just fruits/veg/poultry
   {
     id: "r1",
     name: "Fresh Honey",
@@ -559,34 +556,35 @@ export default function Market() {
   });
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white border-b border-gray-200 sticky top-0 z-50">
-        <div className="max-w-6xl mx-auto px-4 py-3">
-          <div className="relative mb-3">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <div className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4">
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-3 sm:mb-4">
+            Farm Market
+          </h1>
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-gray-500" />
             <input
               type="text"
               placeholder="Search products or farmers"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+              className="w-full pl-10 pr-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 dark:focus:ring-teal-600 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
             />
           </div>
         </div>
       </div>
 
-      {/* Category Filter */}
-      <div className="max-w-6xl mx-auto px-4 py-4">
-        <div className="flex gap-2 mb-4 overflow-x-auto pb-2">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
+        <div className="flex gap-2 mb-4 sm:mb-6 overflow-x-auto pb-2 scrollbar-hide">
           {categories.map((category) => (
             <button
               key={category}
               onClick={() => setSelectedCategory(category)}
-              className={`px-4 py-2 rounded-lg font-medium whitespace-nowrap ${
+              className={`px-3 sm:px-4 py-2 rounded-lg font-medium whitespace-nowrap text-sm sm:text-base transition-colors ${
                 selectedCategory === category
                   ? "bg-teal-600 text-white"
-                  : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-200"
+                  : "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700"
               }`}
             >
               {category}
@@ -594,28 +592,27 @@ export default function Market() {
           ))}
         </div>
 
-        {/* Product Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
           {filteredProducts.map((product) => (
             <div
               key={product.id}
-              className="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
+              className="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden hover:shadow-lg dark:hover:shadow-xl transition-shadow cursor-pointer border border-gray-100 dark:border-gray-700"
             >
               <div className="relative">
                 <img
                   src={product.image}
                   alt={product.name}
-                  className="w-full h-48 object-cover"
+                  className="w-full h-48 sm:h-56 object-cover"
                 />
-                <button className="absolute top-3 right-3 bg-white rounded-full p-2 shadow-md hover:bg-gray-50">
-                  <Heart className="w-5 h-5 text-gray-600" />
+                <button className="absolute top-3 right-3 bg-white dark:bg-gray-800 rounded-full p-2 shadow-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                  <Heart className="w-5 h-5 text-gray-600 dark:text-gray-300" />
                 </button>
                 <div className="absolute bottom-3 left-3">
                   <span
                     className={`px-2 py-1 rounded-full text-xs font-medium ${
                       product.stock === "In Stock"
-                        ? "bg-green-100 text-green-700"
-                        : "bg-orange-100 text-orange-700"
+                        ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
+                        : "bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400"
                     }`}
                   >
                     {product.stock}
@@ -624,32 +621,34 @@ export default function Market() {
               </div>
 
               <div className="p-4">
-                <h3 className="font-semibold text-gray-900 text-lg mb-1">
+                <h3 className="font-semibold text-gray-900 dark:text-white text-base sm:text-lg mb-1 line-clamp-1">
                   {product.name}
                 </h3>
-                <p className="text-sm text-gray-500 mb-2">{product.farmer}</p>
-                <p className="text-xs text-gray-400 mb-3">
+                <p className="text-sm text-gray-500 dark:text-gray-400 mb-2 line-clamp-1">
+                  {product.farmer}
+                </p>
+                <p className="text-xs text-gray-400 dark:text-gray-500 mb-3 line-clamp-1">
                   📍 {product.location}
                 </p>
 
                 <div className="flex items-center justify-between mb-3">
                   <div>
-                    <span className="text-2xl font-bold text-teal-600">
+                    <span className="text-xl sm:text-2xl font-bold text-teal-600 dark:text-teal-400">
                       ₦{product.price.toFixed(2)}
                     </span>
-                    <span className="text-sm text-gray-500">
+                    <span className="text-sm text-gray-500 dark:text-gray-400">
                       /{product.unit}
                     </span>
                   </div>
                   <div className="flex items-center gap-1">
                     <span className="text-yellow-400">⭐</span>
-                    <span className="text-sm font-medium text-gray-700">
+                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
                       {product.rating}
                     </span>
                   </div>
                 </div>
 
-                <button className="w-full bg-teal-600 hover:bg-teal-700 text-white py-2.5 rounded-lg font-medium flex items-center justify-center gap-2">
+                <button className="w-full bg-teal-600 hover:bg-teal-700 dark:bg-teal-700 dark:hover:bg-teal-600 text-white py-2.5 rounded-lg font-medium flex items-center justify-center gap-2 transition-colors">
                   <ShoppingCart className="w-4 h-4" /> Add to Cart
                 </button>
               </div>
@@ -658,10 +657,12 @@ export default function Market() {
         </div>
 
         {filteredProducts.length === 0 && (
-          <div className="text-center py-12">
-            <ShoppingBag className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <p className="text-gray-500 text-lg">No products found</p>
-            <p className="text-gray-400 text-sm">
+          <div className="text-center py-12 sm:py-16">
+            <ShoppingBag className="w-16 h-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
+            <p className="text-gray-500 dark:text-gray-400 text-lg mb-2">
+              No products found
+            </p>
+            <p className="text-gray-400 dark:text-gray-500 text-sm">
               Try adjusting your search or filters
             </p>
           </div>

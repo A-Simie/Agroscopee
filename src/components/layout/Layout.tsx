@@ -25,14 +25,14 @@ export default function Layout() {
     localStorage.removeItem("AgroScopeUser");
     window.location.href = "/login";
   };
+
   return (
-    <div className="flex min-h-screen bg-gray-50 text-gray-800 dark:bg-gray-900 dark:text-gray-100">
-      {/* Fixed sidebar on desktop */}
+    <div className="flex min-h-screen bg-gray-50 text-gray-800 dark:bg-gray-900 dark:text-gray-100 overflow-x-hidden">
       <Sidebar />
 
       <div className="hidden md:block md:w-56 flex-shrink-0"></div>
 
-      <main className="flex-1 p-6 pb-20 md:pb-0">
+      <main className="flex-1 min-w-0 p-4 sm:p-6 pb-20 md:pb-0">
         <Header userName={userName} onLogout={handleLogout} />
         <Outlet />
       </main>

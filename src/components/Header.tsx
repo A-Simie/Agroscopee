@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { Leaf, User, LogOut } from "lucide-react";
 import {
   DropdownMenu,
@@ -17,7 +18,7 @@ interface HeaderProps {
 
 export const Header: React.FC<HeaderProps> = ({ userName, onLogout }) => {
   const initial = userName?.charAt(0)?.toUpperCase() ?? "A";
-
+  const navigate = useNavigate();
   return (
     <header className="bg-card/80 backdrop-blur border-b border-border px-4 md:px-8 py-3">
       <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
@@ -82,7 +83,12 @@ export const Header: React.FC<HeaderProps> = ({ userName, onLogout }) => {
 
               <DropdownMenuSeparator />
 
-              <DropdownMenuItem className="text-xs">
+              <DropdownMenuItem
+                className="text-xs"
+                onClick={() => {
+                  navigate("/profile");
+                }}
+              >
                 <User className="mr-2 h-4 w-4" />
                 <span>Profile</span>
               </DropdownMenuItem>

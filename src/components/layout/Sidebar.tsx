@@ -57,7 +57,7 @@ export default function Sidebar() {
         </nav>
 
         <button
-          className="w-full bg-red-700 hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-700 text-white font-medium py-2.5 px-4 rounded-lg transition-colors mt-4"
+          className="w-full border border-red-200/80 dark:border-red-800/70 text-red-600 dark:text-red-300 bg-red-50/60 hover:bg-red-100 dark:bg-red-900/10 dark:hover:bg-red-900/25 font-medium py-2.5 px-4 rounded-lg text-sm transition-colors mt-4"
           onClick={() => {
             localStorage.removeItem("AgroAccessToken");
             localStorage.removeItem("AgroScopeUser");

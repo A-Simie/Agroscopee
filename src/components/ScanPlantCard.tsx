@@ -3,12 +3,14 @@ import { Upload, Camera, RefreshCcw, Microscope, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
+import { scanPlantImage } from "@/API/scans";
 
 export const ScanPlantCard = () => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const cameraInputRef = useRef<HTMLInputElement | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [fileName, setFileName] = useState<string | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isScanning, setIsScanning] = useState(false);
   const navigate = useNavigate();
 
@@ -22,18 +24,22 @@ export const ScanPlantCard = () => {
     const reader = new FileReader();
     reader.onloadend = () => setPreview(reader.result as string);
     reader.readAsDataURL(file);
+
+    setSelectedFile(file);
     setFileName(file.name.replace(/\.[^/.]+$/, ""));
   };
 
   const handleReset = () => {
     setPreview(null);
     setFileName(null);
+    setSelectedFile(null);
     if (fileInputRef.current) fileInputRef.current.value = "";
     if (cameraInputRef.current) cameraInputRef.current.value = "";
   };
 
-  const handleScan = () => {
+  const handleScan = async () => {
     if (!fileName) return;
+
     setIsScanning(true);
 
     const slug = fileName
@@ -42,10 +48,19 @@ export const ScanPlantCard = () => {
       .replace(/_+/g, "-")
       .toLowerCase();
 
-    setTimeout(() => {
-      setIsScanning(false);
+    try {
+      if (selectedFile) {
+        const result = await scanPlantImage(selectedFile);
+        navigate(`/disease-analysis?scanId=${encodeURIComponent(result.id)}`);
+      } else {
+        navigate(`/disease-analysis?disease=${slug}`);
+      }
+    } catch (error) {
+      console.error("SCAN_ERROR", error);
       navigate(`/disease-analysis?disease=${slug}`);
-    }, 5000);
+    } finally {
+      setIsScanning(false);
+    }
   };
 
   return (
@@ -61,7 +76,6 @@ export const ScanPlantCard = () => {
 
       <Card className="relative p-8 border-2 border-dashed border-border hover:border-primary/50 transition-colors dark:bg-gray-900">
         <div className="flex flex-col items-center text-center">
-          {/* Preview or Placeholder */}
           <div className="mb-4 p-4 bg-primary/10 rounded-lg flex items-center justify-center w-40 h-40">
             {preview ? (
               <img
@@ -94,7 +108,6 @@ export const ScanPlantCard = () => {
               : "Upload or snap a clear photo of a plant leaf to run an instant disease analysis powered by AgroScope."}
           </p>
 
-          {/* Hidden Inputs */}
           <input
             ref={fileInputRef}
             type="file"
@@ -111,7 +124,6 @@ export const ScanPlantCard = () => {
             onChange={handleFileChange}
           />
 
-          {/* Buttons */}
           <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
             {!preview ? (
               <>

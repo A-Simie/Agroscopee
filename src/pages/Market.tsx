@@ -1,12 +1,5 @@
 import { useState } from "react";
-import {
-  Leaf,
-  Home,
-  Search,
-  ShoppingBag,
-  Heart,
-  ShoppingCart,
-} from "lucide-react";
+import { Search, ShoppingBag, Heart, ShoppingCart } from "lucide-react";
 
 interface Product {
   id: string;
@@ -570,18 +563,6 @@ export default function Market() {
       {/* Header */}
       <div className="bg-white border-b border-gray-200 sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-4 py-3">
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-teal-600 rounded-lg flex items-center justify-center">
-                <Leaf className="w-5 h-5 text-white" />
-              </div>
-              <span className="font-semibold text-gray-800 text-lg">
-                AgroScope
-              </span>
-            </div>
-            <Home className="w-5 h-5 text-gray-500 cursor-pointer hover:text-teal-600" />
-          </div>
-
           <div className="relative mb-3">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
             <input

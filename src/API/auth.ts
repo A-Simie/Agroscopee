@@ -88,7 +88,7 @@ export const signupUser = async (
     }
 
     localStorage.setItem("AgroScopeUser", JSON.stringify(response.data));
-    toast.success("Account created successfully. Welcome to AgroScope!");
+    toast.success("AgroScope account created successfully!");
     return response.data;
   } catch (error) {
     const axiosError = error as AxiosError<ErrorResponse>;

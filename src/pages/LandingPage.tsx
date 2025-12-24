@@ -192,7 +192,7 @@ const LandingPage = () => {
               <span className="font-semibold text-green-700">AgroScope</span>
             </div>
             <p className="text-muted-foreground text-sm">
-              © 2024 AgroScope. Cultivating the future of agriculture.
+              © 2025 AgroScope. Cultivating the future of agriculture.
             </p>
           </div>
         </div>

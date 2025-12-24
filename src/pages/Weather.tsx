@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Search,
   CloudRain,
@@ -6,52 +6,91 @@ import {
   Sun,
   Cloud,
   Droplets,
+  Loader2,
 } from "lucide-react";
-
-interface ForecastDay {
-  day: string;
-  icon: string;
-  precipitation: string;
-  temp: string;
-}
+import { getWeatherForecast, type WeatherForecast } from "@/API/weather";
 
 export default function WeatherInsights() {
   const [searchQuery, setSearchQuery] = useState("");
+  const [forecast, setForecast] = useState<WeatherForecast | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [location, setLocation] = useState<{ lat: number; lon: number } | null>(
+    null
+  );
 
-  const forecastData: ForecastDay[] = [
-    { day: "Today", icon: "sun", precipitation: "10%", temp: "22° / 14°" },
-    { day: "Mon", icon: "sun", precipitation: "0%", temp: "24° / 15°" },
-    { day: "Tue", icon: "cloud", precipitation: "20%", temp: "23° / 16°" },
-    { day: "Wed", icon: "sun", precipitation: "10%", temp: "25° / 17°" },
-    { day: "Thu", icon: "rain", precipitation: "80%", temp: "21° / 15°" },
-    { day: "Fri", icon: "drizzle", precipitation: "60%", temp: "20° / 14°" },
-    { day: "Sat", icon: "sun", precipitation: "0%", temp: "22° / 15°" },
-  ];
-
-  const getWeatherIcon = (iconType: string) => {
-    switch (iconType) {
-      case "sun":
-        return <Sun className="w-6 h-6 text-yellow-500" />;
-      case "cloud":
-        return <Cloud className="w-6 h-6 text-gray-400" />;
-      case "rain":
-        return <CloudRain className="w-6 h-6 text-blue-500" />;
-      case "drizzle":
-        return <CloudDrizzle className="w-6 h-6 text-blue-400" />;
-      default:
-        return <Sun className="w-6 h-6 text-yellow-500" />;
+  useEffect(() => {
+    if (!navigator.geolocation) {
+      setLocation({ lat: 6.52, lon: 3.38 });
+      return;
     }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setLocation({
+          lat: position.coords.latitude,
+          lon: position.coords.longitude,
+        });
+      },
+      () => {
+        setLocation({ lat: 6.52, lon: 3.38 });
+      }
+    );
+  }, []);
+
+  useEffect(() => {
+    if (!location) return;
+
+    const fetchForecast = async () => {
+      setIsLoading(true);
+      try {
+        const data = await getWeatherForecast(location.lat, location.lon);
+        setForecast(data);
+      } catch (error) {
+        console.error("Forecast error:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchForecast();
+  }, [location]);
+
+  const getWeatherIcon = (weatherCode: number) => {
+    if (weatherCode === 0) {
+      return <Sun className="w-6 h-6 text-yellow-500" />;
+    }
+    if (weatherCode <= 3) {
+      return <Cloud className="w-6 h-6 text-gray-400" />;
+    }
+    if (weatherCode <= 67) {
+      return <CloudDrizzle className="w-6 h-6 text-blue-400" />;
+    }
+    return <CloudRain className="w-6 h-6 text-blue-500" />;
   };
+
+  const getDayName = (dateString: string, index: number): string => {
+    if (index === 0) return "Today";
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", { weekday: "short" });
+  };
+
+  if (isLoading || !forecast) {
+    return (
+      <div className="flex-1 bg-gray-50 dark:bg-gray-900 p-4 md:p-8">
+        <div className="flex items-center justify-center h-96">
+          <Loader2 className="w-10 h-10 animate-spin text-green-600" />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex-1 bg-gray-50 dark:bg-gray-900 p-4 md:p-8">
-      {/* Header */}
       <div className="mb-6 md:mb-8">
         <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-4 md:mb-6">
           Weather Insights
         </h1>
 
-        {/* Search Bar */}
         <div className="relative max-w-md">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
           <input
@@ -64,26 +103,25 @@ export default function WeatherInsights() {
         </div>
       </div>
 
-      {/* Current Weather Card */}
       <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm p-4 md:p-6 mb-4 md:mb-6 border border-gray-100 dark:border-gray-800">
         <div className="flex items-start justify-between mb-6">
           <div>
             <h2 className="text-lg md:text-xl font-semibold text-gray-900 dark:text-white">
-              Sunnyvale Farm, CA
+              Your Farm Location
             </h2>
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              Partly Cloudy
+              Current Conditions
             </p>
           </div>
-          <Sun className="w-12 h-12 text-yellow-500" />
+          {getWeatherIcon(0)}
         </div>
 
         <div className="mb-6">
           <div className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-1">
-            22°C
+            {Math.round(forecast.current.temperatureC)}°C
           </div>
           <p className="text-sm text-gray-500 dark:text-gray-400">
-            Feels like 20°C
+            Real-time field conditions
           </p>
         </div>
 
@@ -93,28 +131,27 @@ export default function WeatherInsights() {
               Humidity
             </p>
             <p className="text-lg font-semibold text-gray-900 dark:text-white">
-              65%
+              {Math.round(forecast.current.humidity)}%
             </p>
           </div>
           <div>
             <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
-              Wind Speed
+              Rain
             </p>
             <p className="text-lg font-semibold text-gray-900 dark:text-white">
-              10 km/h
+              {forecast.current.precipitationMm.toFixed(1)} mm
             </p>
           </div>
           <div>
             <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
-              UV Index
+              Cloud Cover
             </p>
             <p className="text-lg font-semibold text-gray-900 dark:text-white">
-              High
+              {Math.round(forecast.current.cloudCover)}%
             </p>
           </div>
         </div>
 
-        {/* Planting Advisory */}
         <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-4 border border-green-100 dark:border-green-800">
           <div className="flex gap-3">
             <div className="w-8 h-8 bg-green-100 dark:bg-green-800 rounded-full flex items-center justify-center flex-shrink-0">
@@ -122,48 +159,44 @@ export default function WeatherInsights() {
             </div>
             <div>
               <h3 className="font-semibold text-green-900 dark:text-green-100 mb-1">
-                Maize Planting Advisory
+                Farm Advisory
               </h3>
-              <p className="text-sm font-medium text-green-800 dark:text-green-200 mb-2">
-                Optimal Planting Window: This Wednesday Afternoon
-              </p>
               <p className="text-xs text-green-700 dark:text-green-300 leading-relaxed">
-                Conditions are ideal. Soil temperatures are favorable and light
-                rain is forecasted for Thursday, ensuring good moisture for
-                germination.
+                {forecast.current.summary}
               </p>
             </div>
           </div>
         </div>
       </div>
 
-      {/* 7-Day Forecast */}
       <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm p-4 md:p-6 border border-gray-100 dark:border-gray-800">
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
           7-Day Forecast
         </h3>
 
         <div className="space-y-3">
-          {forecastData.map((day, index) => (
+          {forecast.daily.map((day, index) => (
             <div
-              key={index}
+              key={day.date}
               className="flex items-center justify-between py-3 border-b border-gray-100 dark:border-gray-800 last:border-b-0"
             >
               <div className="w-16 text-sm font-medium text-gray-700 dark:text-gray-300">
-                {day.day}
+                {getDayName(day.date, index)}
               </div>
               <div className="flex-1 flex justify-center">
-                {getWeatherIcon(day.icon)}
+                {getWeatherIcon(day.weatherCode)}
               </div>
               <div
                 className={`w-16 text-center text-sm font-medium ${
-                  day.precipitation === "0%" ? "text-gray-400" : "text-blue-600"
+                  day.precipitationProbability === 0
+                    ? "text-gray-400"
+                    : "text-blue-600"
                 }`}
               >
-                {day.precipitation}
+                {day.precipitationProbability}%
               </div>
               <div className="w-24 text-right text-sm font-medium text-gray-700 dark:text-gray-300">
-                {day.temp}
+                {Math.round(day.tempMax)}° / {Math.round(day.tempMin)}°
               </div>
             </div>
           ))}

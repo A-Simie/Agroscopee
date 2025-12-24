@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
-import { Leaf, Info, Sun, Lightbulb, Home, Loader2 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect, useMemo } from "react";
+import { useSearchParams, useNavigate, useParams } from "react-router-dom";
+import { Info, Sun, Lightbulb, Loader2 } from "lucide-react";
+import { getScanById, type ScanResult } from "@/API/scans";
 
 interface DiseaseData {
   name: string;
@@ -197,19 +197,62 @@ const diseases: DiseaseData[] = [
   },
 ];
 
+const defaultImage =
+  "https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?w=400&h=400&fit=crop";
+
+const mapScanToDiseaseData = (scan: ScanResult): DiseaseData => {
+  const [organic, pruning, chemical] = scan.recommendations;
+
+  return {
+    name: scan.disease,
+    confidence: Math.round(scan.confidence * 100),
+    description: scan.summary,
+    weather:
+      "Weather-specific insights will be added soon. For now, watch humidity and rainfall, as they strongly affect most crop diseases.",
+    recommendations: {
+      organic:
+        organic ??
+        "Use affordable organic options like neem oil, wood ash, or compost tea on visibly affected leaves.",
+      pruning:
+        pruning ??
+        "Remove heavily infected leaves and residues and dispose of them away from the farm.",
+      chemical:
+        chemical ??
+        "If you must use chemicals, use locally registered products and strictly follow label instructions.",
+    },
+    image: defaultImage,
+  };
+};
+
 export default function AgroScope() {
   const [searchParams] = useSearchParams();
+  const { scanId: paramScanId } = useParams<{ scanId?: string }>();
   const [currentDisease, setCurrentDisease] = useState<DiseaseData | null>(
     null
   );
   const [isScanning, setIsScanning] = useState(false);
+  const [isLoadingScan, setIsLoadingScan] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const navigate = useNavigate();
 
+  const scanIdFromQuery = searchParams.get("scanId");
   const diseaseNameFromURL = searchParams.get("disease");
 
+  const scanId = useMemo(
+    () => scanIdFromQuery ?? paramScanId ?? null,
+    [scanIdFromQuery, paramScanId]
+  );
+
   useEffect(() => {
-    if (diseaseNameFromURL) {
-      // Normalize the query to match disease names (case-insensitive, spaces vs hyphens)
+    let cancelled = false;
+
+    const loadFromStaticDisease = () => {
+      if (!diseaseNameFromURL) {
+        setCurrentDisease(diseases[0]);
+        setErrorMessage(null);
+        return;
+      }
+
       const normalizedQuery = diseaseNameFromURL
         .replace(/-/g, " ")
         .toLowerCase();
@@ -220,24 +263,68 @@ export default function AgroScope() {
 
       if (found) {
         setCurrentDisease(found);
+        setErrorMessage(null);
       } else {
-        console.warn("No disease found for:", diseaseNameFromURL);
         setCurrentDisease(null);
+        setErrorMessage(
+          `We couldn't find any matching record for “${diseaseNameFromURL}”.`
+        );
       }
-    } else {
-      // Fallback: show first disease if no param
-      setCurrentDisease(diseases[0]);
-    }
-  }, [diseaseNameFromURL]);
+    };
+
+    const loadScan = async () => {
+      if (!scanId) {
+        loadFromStaticDisease();
+        return;
+      }
+
+      setIsLoadingScan(true);
+      setErrorMessage(null);
+
+      try {
+        const scan = await getScanById(scanId);
+        if (cancelled) return;
+
+        const disease = mapScanToDiseaseData(scan);
+        setCurrentDisease(disease);
+      } catch (error) {
+        console.error("LOAD_SCAN_ERROR", error);
+        if (cancelled) return;
+
+        loadFromStaticDisease();
+      } finally {
+        if (!cancelled) {
+          setIsLoadingScan(false);
+        }
+      }
+    };
+
+    loadScan();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [scanId, diseaseNameFromURL]);
 
   const handleChatProf = () => {
+    if (!currentDisease) return;
+
     setIsScanning(true);
 
     setTimeout(() => {
       setIsScanning(false);
-      navigate(`/chatbot?disease=${diseaseNameFromURL}`);
+      navigate(`/chatbot?disease=${encodeURIComponent(currentDisease.name)}`);
     }, 5000);
   };
+
+  if (isLoadingScan) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 text-center p-6">
+        <Loader2 className="w-10 h-10 animate-spin text-teal-600 mb-3" />
+        <p className="text-gray-600">Loading your plant diagnosis...</p>
+      </div>
+    );
+  }
 
   if (!currentDisease) {
     return (
@@ -246,7 +333,8 @@ export default function AgroScope() {
           Disease not found
         </h2>
         <p className="text-gray-500">
-          We couldn&apos;t find any matching record for “{diseaseNameFromURL}”.
+          {errorMessage ??
+            "No diagnosis could be resolved from the URL parameters."}
         </p>
       </div>
     );
@@ -264,22 +352,7 @@ export default function AgroScope() {
       )}
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 ">
         <div className="max-w-full mx-auto p-4 -pt-6">
-          {/* Header */}
-          <div className="bg-white rounded-t-2xl shadow-sm p-4 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-teal-600 rounded-lg flex items-center justify-center">
-                <Leaf className="w-5 h-5 text-white" />
-              </div>
-              <span className="font-semibold text-gray-800 text-lg">
-                AgroScope
-              </span>
-            </div>
-            <Home className="w-5 h-5 text-gray-500" />
-          </div>
-
-          {/* Main Content */}
           <div className="bg-white shadow-lg rounded-b-2xl p-6 space-y-6">
-            {/* Disease Header */}
             <div className="flex items-start justify-between">
               <div className="flex-1">
                 <h1 className="text-3xl font-bold text-gray-900 mb-2">
@@ -314,7 +387,6 @@ export default function AgroScope() {
               </div>
             </div>
 
-            {/* Description */}
             <div className="bg-gray-50 rounded-xl p-4">
               <div className="flex items-center gap-2 mb-2">
                 <Info className="w-5 h-5 text-teal-600" />
@@ -325,7 +397,6 @@ export default function AgroScope() {
               </p>
             </div>
 
-            {/* Weather Insights */}
             <div className="bg-amber-50 rounded-xl p-4">
               <div className="flex items-center gap-2 mb-2">
                 <Sun className="w-5 h-5 text-amber-600" />
@@ -338,7 +409,6 @@ export default function AgroScope() {
               </p>
             </div>
 
-            {/* AI Recommendations */}
             <div>
               <div className="flex items-center gap-2 mb-4">
                 <Lightbulb className="w-5 h-5 text-teal-600" />
@@ -363,7 +433,6 @@ export default function AgroScope() {
               </div>
             </div>
 
-            {/* Action Buttons */}
             <div className="flex gap-3 pt-2">
               <button className="flex-1 bg-teal-600 hover:bg-teal-700 text-white font-medium py-3 rounded-xl transition-colors">
                 Learn More
@@ -388,7 +457,6 @@ export default function AgroScope() {
   );
 }
 
-// ✅ helper subcomponent
 const RecommendationItem = ({
   title,
   text,

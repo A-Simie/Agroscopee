@@ -12,6 +12,7 @@ import Profile from "@/pages/Profile";
 import Signup from "@/pages/signup";
 import LandingPage from "@/pages/LandingPage";
 import { ProtectedRoute } from "@/router/ProtectedRoute";
+import AuthCallback from "@/pages/AuthCallback";
 
 export default function AppRoutes() {
   return (
@@ -32,6 +33,8 @@ export default function AppRoutes() {
 
       <Route path="login" element={<Login />} />
       <Route path="signup" element={<Signup />} />
+
+      <Route path="/auth/callback" element={<AuthCallback />} />
 
       <Route path="*" element={<NotFound />} />
     </Routes>

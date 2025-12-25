@@ -90,3 +90,13 @@ export const signupUser = async (
     return null;
   }
 };
+
+export const signupWithGoogle = (): void => {
+  const apiUrl = import.meta.env.VITE_AGROSCOPE_API_URL;
+  window.location.href = `${apiUrl}/api/auth/google`;
+};
+
+export const loginWithGoogle = (): void => {
+  const apiUrl = import.meta.env.VITE_AGROSCOPE_API_URL;
+  window.location.href = `${apiUrl}/api/auth/google`;
+};

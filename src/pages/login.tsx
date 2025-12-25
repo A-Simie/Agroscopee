@@ -1,11 +1,12 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Leaf, Eye, EyeOff } from "lucide-react";
+import { FcGoogle } from "react-icons/fc";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import cornfield from "@/assets/cornfield.jpeg";
-import { loginUser } from "@/API/auth";
+import { loginUser, loginWithGoogle } from "@/API/auth";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -131,9 +132,24 @@ export default function Login() {
               </Button>
             </form>
 
-            <div className="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400">
-              <p>Secure access to your farm data.</p>
+            <div className="relative flex items-center justify-center">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-slate-200 dark:border-slate-700" />
+              </div>
+              <span className="relative px-2 text-[11px] uppercase tracking-wide text-slate-400 bg-white dark:bg-slate-900">
+                or continue with
+              </span>
             </div>
+
+            <Button
+              type="button"
+              onClick={loginWithGoogle}
+              variant="outline"
+              className="w-full h-10 text-sm flex items-center justify-center gap-2 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+            >
+              <FcGoogle size={18} />
+              Continue with Google
+            </Button>
 
             <div className="text-center text-sm">
               <p className="text-slate-500 dark:text-slate-400">

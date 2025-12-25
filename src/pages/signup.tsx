@@ -1,15 +1,22 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { FcGoogle } from "react-icons/fc";
 import { Leaf } from "lucide-react";
-import { signupUser } from "@/API/auth";
+import { signupUser, signupWithGoogle } from "@/API/auth";
+
+interface FormState {
+  name: string;
+  email: string;
+  password: string;
+  confirm: string;
+}
 
 export default function Signup() {
   const navigate = useNavigate();
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<FormState>({
     name: "",
     email: "",
     password: "",
@@ -35,20 +42,25 @@ export default function Signup() {
 
     setIsSubmitting(true);
 
-    const user = await signupUser({
-      name: form.name,
-      email: form.email,
-      password: form.password,
-    });
+    try {
+      const user = await signupUser({
+        name: form.name,
+        email: form.email,
+        password: form.password,
+      });
 
-    setIsSubmitting(false);
+      if (!user) {
+        setError("Unable to create account. Please check your details.");
+        return;
+      }
 
-    if (!user) {
-      setError("Unable to create account. Please check your details.");
-      return;
+      navigate("/login");
+    } catch (err) {
+      console.log(err);
+      setError("An error occurred. Please try again");
+    } finally {
+      setIsSubmitting(false);
     }
-
-    navigate("/login");
   };
 
   return (
@@ -123,15 +135,19 @@ export default function Signup() {
             </form>
 
             <div className="relative flex items-center justify-center">
-              <span className="px-2 text-[11px] uppercase tracking-wide text-slate-400 bg-white dark:bg-slate-900">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-slate-200 dark:border-slate-700" />
+              </div>
+              <span className="relative px-2 text-[11px] uppercase tracking-wide text-slate-400 bg-white dark:bg-slate-900">
                 or continue with
               </span>
             </div>
 
             <Button
               type="button"
+              onClick={signupWithGoogle}
               variant="outline"
-              className="w-full h-10 text-sm flex items-center justify-center gap-2 border-slate-200 dark:border-slate-700"
+              className="w-full h-10 text-sm flex items-center justify-center gap-2 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
             >
               <FcGoogle size={18} />
               Sign up with Google

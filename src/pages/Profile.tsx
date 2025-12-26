@@ -2,12 +2,13 @@ import React, { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Lock, History, LogOut } from "lucide-react";
+import { Lock, History, LogOut, Trash2, KeyRound } from "lucide-react";
 
 interface StoredUser {
   id: string;
   email: string;
   name?: string;
+  google_id?: string | null;
 }
 
 export default function Profile() {
@@ -23,6 +24,8 @@ export default function Profile() {
       return null;
     }
   }, []);
+
+  const hasPassword = !user?.google_id;
 
   const displayName =
     user?.name && user.name.trim().length > 0
@@ -71,6 +74,7 @@ export default function Profile() {
             <div className="flex flex-col sm:items-end gap-2">
               <Button
                 variant="outline"
+                onClick={() => navigate("/profile/edit")}
                 className="h-9 px-4 text-xs border-emerald-200 dark:border-slate-700"
               >
                 Edit profile
@@ -83,18 +87,33 @@ export default function Profile() {
         </Card>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Card className="rounded-2xl bg-white/90 dark:bg-slate-900/90 shadow-sm hover:shadow-md transition-shadow">
+          <Card
+            className="rounded-2xl bg-white/90 dark:bg-slate-900/90 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+            onClick={() =>
+              navigate(
+                hasPassword
+                  ? "/profile/change-password"
+                  : "/profile/set-password"
+              )
+            }
+          >
             <CardContent className="py-4 px-5 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 rounded-full bg-emerald-50 dark:bg-emerald-900/30 flex items-center justify-center">
-                  <Lock className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                  {hasPassword ? (
+                    <Lock className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                  ) : (
+                    <KeyRound className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                  )}
                 </div>
                 <div>
                   <p className="text-sm font-medium text-slate-900 dark:text-slate-50">
-                    Change password
+                    {hasPassword ? "Change password" : "Set password"}
                   </p>
                   <p className="text-xs text-slate-500 dark:text-slate-400">
-                    Keep your AgroScope account secure.
+                    {hasPassword
+                      ? "Keep your AgroScope account secure."
+                      : "Add password login option."}
                   </p>
                 </div>
               </div>
@@ -107,7 +126,10 @@ export default function Profile() {
             </CardContent>
           </Card>
 
-          <Card className="rounded-2xl bg-white/90 dark:bg-slate-900/90 shadow-sm hover:shadow-md transition-shadow">
+          <Card
+            className="rounded-2xl bg-white/90 dark:bg-slate-900/90 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+            onClick={() => navigate("/disease-analysis")}
+          >
             <CardContent className="py-4 px-5 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 rounded-full bg-amber-50 dark:bg-amber-900/20 flex items-center justify-center">
@@ -125,9 +147,35 @@ export default function Profile() {
               <Button
                 variant="ghost"
                 className="text-xs text-slate-500 hover:text-emerald-600"
-                onClick={() => navigate("/disease-analysis")}
               >
                 View
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card
+            className="rounded-2xl bg-red-50/50 dark:bg-red-900/10 border-red-100 dark:border-red-900/30 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+            onClick={() => navigate("/profile/delete-account")}
+          >
+            <CardContent className="py-4 px-5 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
+                  <Trash2 className="w-4 h-4 text-red-600 dark:text-red-400" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-slate-900 dark:text-slate-50">
+                    Delete account
+                  </p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                    Permanently remove your account.
+                  </p>
+                </div>
+              </div>
+              <Button
+                variant="ghost"
+                className="text-xs text-red-500 hover:text-red-600"
+              >
+                Delete
               </Button>
             </CardContent>
           </Card>

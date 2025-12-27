@@ -267,7 +267,7 @@ export default function AgroScope() {
       } else {
         setCurrentDisease(null);
         setErrorMessage(
-          `We couldn't find any matching record for “${diseaseNameFromURL}”.`
+          `We couldn't find any matching record for “${diseaseNameFromURL}”. AI rate limited, please try again`
         );
       }
     };
